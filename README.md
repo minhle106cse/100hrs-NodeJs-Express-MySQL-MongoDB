@@ -35,7 +35,7 @@ This repository contains three projects that showcase my learning journey throug
 - **SSL/TLS Configuration**: Set up SSL/TLS for secure HTTP connections, learning the basics of certificates, private keys, and HTTPS.
 
 ### Testing & Validation
-- **Chai.js**: Used Chai.js for unit and integration testing, improving code quality and reliability.
+- **Mocha & Chai.js**: Employed Mocha as a testing framework and Chai.js for assertions, facilitating both unit and integration tests. This setup ensures robust, reliable, and bug-free code by covering critical test cases across different components of the application.
 
 ### Build Tools & Package Management
 - **NPM & Build Tools**: Explored essential Node.js tools and packages, including npm scripts and build automation for an efficient development workflow.
