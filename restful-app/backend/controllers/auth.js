@@ -23,7 +23,6 @@ const signup = (req, res, next) => {
 				error.status = 409
 				throw error
 			}
-
 			return argon.hash(password)
 		})
 		.then((hash) => {
@@ -35,53 +34,72 @@ const signup = (req, res, next) => {
 				userId: user._id
 			})
 		})
-		.catch((err) => next(err))
+		.catch((err) => {
+			console.log('Error in signup')
+			next(err)
+		})
 }
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
 	const { email, password } = req.body
 
-	let fetchedUser
+	try {
+		const user = await User.findOne({ email })
 
-	User.findOne({ email })
-		.then((user) => {
-			if (!user) {
-				const error = new Error('User not found.')
-				error.status = 404
-				throw error
+		if (!user) {
+			const error = new Error('User not found.')
+			error.status = 404
+			throw error
+		}
+
+		const isPasswordCorrect = await argon.verify(user.password, password)
+
+		if (!isPasswordCorrect) {
+			const error = new Error('Wrong password.')
+			error.status = 401
+			throw error
+		}
+
+		const token = jwt.sign(
+			{
+				email,
+				userId: user._id.toString()
+			},
+			'secret_key',
+			{
+				expiresIn: '1h'
 			}
+		)
 
-			fetchedUser = user
-
-			return argon.verify(user.password, password)
+		res.status(200).json({
+			token,
+			userId: user._id.toString()
 		})
-		.then((isPasswordCorrect) => {
-			if (!isPasswordCorrect) {
-				const error = new Error('Wrong password.')
-				error.status = 401
-				throw error
-			}
+	} catch (err) {
+		next(err)
+	}
+}
 
-			const token = jwt.sign(
-				{
-					email,
-					userId: fetchedUser._id.toString()
-				},
-				'secret_key',
-				{
-					expiresIn: '1h'
-				}
-			)
+const getUserStatus = async (req, res, next) => {
+	try {
+		const user = await User.findById(req.userId)
 
-			res.status(200).json({
-				token,
-				userId: fetchedUser._id.toString()
-			})
+		if (!user) {
+			const error = new Error('User not found.')
+			error.status = 404
+			throw error
+		}
+
+		res.status(200).json({
+			status: user.status
 		})
-		.catch((err) => next(err))
+	} catch (err) {
+		next(err)
+	}
 }
 
 module.exports = {
 	signup,
-	login
+	login,
+	getUserStatus
 }

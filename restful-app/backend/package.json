@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "cross-env NODE_ENV=development nodemon app.js"
+		"test": "cross-env NODE_ENV=development mocha",
+		"dev": "cross-env NODE_ENV=development nodemon index.js"
 	},
 	"author": "",
 	"license": "ISC",
@@ -19,10 +19,14 @@
 		"mongoose": "^8.7.3",
 		"multer": "^1.4.5-lts.1",
 		"socket.io": "^4.8.1",
+		"supertest": "^7.0.0",
 		"uuid": "^11.0.0"
 	},
 	"devDependencies": {
+		"chai": "^5.1.2",
 		"cross-env": "^7.0.3",
-		"nodemon": "^3.1.7"
+		"mocha": "^10.8.2",
+		"nodemon": "^3.1.7",
+		"sinon": "^19.0.2"
 	}
 }

@@ -9,6 +9,7 @@ const { v4 } = require('uuid')
 const { init } = require('./socket')
 const feedRoutes = require('./routes/feed')
 const authRoutes = require('./routes/auth')
+const { start } = require('repl')
 
 dotenv.config({
 	path: `.env.${process.env.NODE_ENV}`
@@ -71,19 +72,25 @@ app.use((error, req, res, next) => {
 	})
 })
 
-const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bjri2.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`
+const startServer = async () => {
+	const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bjri2.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`
 
-mongoose
-	.connect(MONGODB_URI)
-	.then(() => {
+	try {
+		await mongoose.connect(MONGODB_URI)
 		const server = app.listen(process.env.PORT)
 
 		const io = init(server)
-
 		io.on('connection', (socket) => {
 			console.log('Client connected')
 		})
-	})
-	.catch((err) => {
+
+		return server
+	} catch (err) {
 		console.log(err)
-	})
+	}
+}
+
+module.exports = {
+	app,
+	startServer
+}
